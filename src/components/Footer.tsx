@@ -11,10 +11,10 @@ const Footer = () => {
         <div className="container flex flex-col items-center justify-between space-y-4 px-4 md:flex-row md:space-y-0">
           <div className="flex items-center space-x-2">
             <Bot className="h-6 w-6 text-cyan-400" />
-            <span className="font-bold">ChatFlow</span>
+            <span className="font-bold">Tutor.AI</span>
           </div>
           <p className="text-sm text-gray-400">
-            © {new Date().getFullYear()} ChatFlow. All rights reserved.
+            © {new Date().getFullYear()} Tutor.AI. All rights reserved.
           </p>
           <div className="flex space-x-6">
             <Link
@@ -28,6 +28,18 @@ const Footer = () => {
               href="#"
             >
               Terms
+            </Link>
+            <Link
+              className="text-sm text-gray-400 hover:text-cyan-400"
+              href="#"
+            >
+              Subjects
+            </Link>
+            <Link
+              className="text-sm text-gray-400 hover:text-cyan-400"
+              href="#"
+            >
+              About
             </Link>
           </div>
         </div>

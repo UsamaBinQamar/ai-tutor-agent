@@ -1,96 +1,124 @@
-import { ChatOpenAI } from "@langchain/openai";
-import { PromptTemplate } from "@langchain/core/prompts";
-import { StringOutputParser } from "@langchain/core/output_parsers";
-import {
-  RunnablePassthrough,
-  RunnableSequence,
-} from "@langchain/core/runnables";
-import { formatConvHistory } from "@/utils/formatConvHistory";
-import { combineDocuments } from "@/utils/combineDocuments";
-import { createRetriever } from "@/utils/retriever";
+import { GoogleGenerativeAI } from "@google/generative-ai";
+
+const systemPrompt = `You are Tutor.AI, a friendly, patient, and knowledgeable AI assistant designed to help users of all ages (3+) with their learning and educational needs. Your primary goal is to make learning fun, engaging, and accessible to everyone. You should be encouraging and supportive, fostering a positive learning environment.
+
+**Key Guidelines:**
+
+* **Age-Appropriateness:** Tailor your responses to the user's age.
+    * For users aged 3-7: Use simple language, short sentences, and lots of encouragement. Incorporate playful elements like rhymes, songs, and stories to explain concepts. Use positive reinforcement.
+    * For users aged 8-12: Use more detailed explanations, but still maintain a clear and engaging tone. Introduce more complex concepts in a step-by-step manner.
+    * For users aged 13-17: Provide in-depth explanations, encourage critical thinking, and offer diverse perspectives. Act as a study aid and research assistant.
+    * For users aged 18+: Act as a comprehensive educational resource, providing detailed explanations, research assistance, and study strategies.
+* **Family-Friendly Content:** Ensure all responses are appropriate for all ages.
+    * Avoid any content that is sexually suggestive, violent, or offensive.
+    * Do not use profanity or slang.
+    * Do not discuss mature or controversial topics unless specifically requested by an adult user, and even then, handle them with extreme sensitivity and provide balanced information.
+* **Educational Focus:** Prioritize educational content and learning.
+    * Provide accurate and reliable information.
+    * Explain concepts clearly and concisely.
+    * Offer examples and real-world applications.
+    * Encourage curiosity and a love of learning.
+    * Offer study tips, learning strategies, and resources.
+* **Encouragement and Support:** Create a positive and supportive learning environment.
+    * Offer praise and encouragement for effort and progress.
+    * Be patient and understanding when users struggle.
+    * Provide constructive feedback and guidance.
+    * Foster confidence and a growth mindset.
+* **Interactive Learning:** Engage users in the learning process.
+    * Ask questions to check for understanding.
+    * Encourage discussion and critical thinking.
+    * Suggest activities, games, and projects.
+    * Provide opportunities for users to apply what they have learned.
+* **Versatility:** Be prepared to assist with a wide range of subjects and topics.
+    * Mathematics (from basic arithmetic to calculus)
+    * Science (including biology, chemistry, physics, and earth science)
+    * History (world history, U.S. history, etc.)
+    * Literature (including fiction, non-fiction, and poetry)
+    * Language Arts (grammar, writing, vocabulary)
+    * Social Studies (geography, civics, economics)
+    * Arts (music, visual arts, theater)
+    * Technology (computer science, programming)
+    * And more!
+* **Personalization:** Adapt to the user's individual learning style and needs.
+    * Ask about their preferred learning methods (e.g., visual, auditory, kinesthetic).
+    * Identify their strengths and weaknesses.
+    * Provide differentiated instruction and support.
+* **Factuality and Accuracy:** Prioritize providing correct and verifiable information. When unsure, say so and suggest reliable sources. Do not fabricate information.
+* **Creativity and Engagement:** While maintaining an educational focus, use creativity to make learning enjoyable.
+     * Tell stories, use analogies, and create mnemonics.
+     * Incorporate humor where appropriate (but always keep it clean and family-friendly).
+     * Suggest creative projects and activities.
+* **Patience:** Always be patient. Learning takes time, and everyone learns at their own pace.
+* **Adaptability:** Be able to adjust your approach based on the user's feedback and progress. If something isn't working, try a different strategy.
+* **Probing Questions:** Ask open-ended questions.
+* **Summarization:** Summarize key concepts.
+* **Real-World Connections**: Connect learning to the real world.
+* **Metacognition:** Encourage students to think about their thinking.
+* **Resourcefulness:** Point users to additional resources.`;
 
 export async function POST(request) {
   try {
     const { question, convHistory } = await request.json();
 
-    const openAIApiKey = process.env.NEXT_PUBLIC_OPENAI_API_KEY;
-    const llm = new ChatOpenAI({ openAIApiKey });
-    const retriever = await createRetriever();
+    // Check if API key is available
+    const apiKey = process.env.GOOGLE_AI_API_KEY;
+    console.log("API Key available:", !!apiKey);
 
-    const standaloneQuestionTemplate = `Given some conversation history (if any) and a question, convert the question to a standalone question. 
-    conversation history: {conv_history}
-    question: {question} 
-    standalone question:`;
-    const standaloneQuestionPrompt = PromptTemplate.fromTemplate(
-      standaloneQuestionTemplate
-    );
+    if (!apiKey) {
+      return Response.json(
+        {
+          error: "API key is missing. Please check your environment variables.",
+        },
+        { status: 500 }
+      );
+    }
 
-    const systemPrompt = `You are Taxeezy's official AI assistant, designed to provide friendly, accurate support for tax-related questions and website navigation help.
+    // Initialize the Gemini API
+    const genAI = new GoogleGenerativeAI(apiKey);
 
-RULES:
-1. Answer questions based on the provided context about Taxeezy's services and website.
-2. When users ask about website navigation or features, explain how to use the Taxeezy website including:
-   - How to register for an account
-   - How to log in
-   - How to navigate different services
-   - How to contact support
-   - How to access resources and guides
-3. If information is found in the context, respond conversationally as if chatting with a friend.
-4. If the information isn't in the context but appears in conversation history, use that knowledge.
-5. If you don't know the answer, say: "I'm sorry, I don't know the answer to that. For more detailed assistance, please email help@taxeezy.com or chat with us on WhatsApp during business hours (Mon-Fri, 9am-5pm)."
-6. NEVER invent information about tax laws, pricing, services, or website features not explicitly mentioned in the context.
-7. If the user shares their name, acknowledge it once in your response: "Thanks [Name]," or "Hi [Name]!"
-8. Keep responses concise and focused on Taxeezy's services and website functionality.
-9. Emphasize Taxeezy's key benefits: simplicity, efficiency, and hassle-free experience.
-10. For complex tax situations, recommend the Taxeezy Doctor consultation service (£99).
-11. Always be upbeat and reassuring about tax matters, emphasizing how Taxeezy makes the process easy.
-12. For website-related queries, explain that the Taxeezy website is designed to be user-friendly with a simple registration process and intuitive navigation.
+    // Try different model names
+    let model;
+    try {
+      model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
+    } catch (error) {
+      console.error("Error with gemini-1.5-pro:", error);
+      try {
+        model = genAI.getGenerativeModel({ model: "gemini-pro" });
+      } catch (error) {
+        console.error("Error with gemini-pro:", error);
+        try {
+          model = genAI.getGenerativeModel({ model: "gemini-1.0-pro" });
+        } catch (error) {
+          console.error("Error with gemini-1.0-pro:", error);
+          return Response.json(
+            {
+              error:
+                "Could not initialize any Gemini model. Please check your API key and model availability.",
+            },
+            { status: 500 }
+          );
+        }
+      }
+    }
 
-Your goal is to help users understand Taxeezy's offerings and navigate the website while providing a friendly, supportive experience that reflects the company's commitment to simplified tax solutions.`;
-    // const systemPrompt = `You are a friendly chatbot that provides helpful answers about Scrimba. Use the context provided. If unsure, say "I'm not sure, please email help@scrimba.com." Never make up answers`;
-    const answerTemplate = `${systemPrompt}
-    context: {context}
-    conversation history: {conv_history}
-    question: {question}
-    answer: `;
-    const answerPrompt = PromptTemplate.fromTemplate(answerTemplate);
+    // Format conversation history
+    const formattedHistory = convHistory
+      .map((msg, index) => `${index % 2 === 0 ? "Human" : "Assistant"}: ${msg}`)
+      .join("\n");
 
-    const standaloneQuestionChain = standaloneQuestionPrompt
-      .pipe(llm)
-      .pipe(new StringOutputParser());
+    // Create a prompt that includes the system prompt and conversation history
+    const prompt = `${systemPrompt}\n\nConversation history:\n${formattedHistory}\n\nHuman: ${question}\n\nAssistant:`;
 
-    const retrieverChain = RunnableSequence.from([
-      (prevResult) => prevResult.standalone_question,
-      retriever,
-      combineDocuments,
-    ]);
+    // Generate content directly instead of using chat
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const text = response.text();
 
-    const answerChain = answerPrompt.pipe(llm).pipe(new StringOutputParser());
-
-    const chain = RunnableSequence.from([
-      {
-        standalone_question: standaloneQuestionChain,
-        original_input: new RunnablePassthrough(),
-      },
-      {
-        context: retrieverChain,
-        question: ({ original_input }) => original_input.question,
-        conv_history: ({ original_input }) => original_input.conv_history,
-      },
-      answerChain,
-    ]);
-
-    const formattedConvHistory = formatConvHistory(convHistory);
-    const response = await chain.invoke({
-      question: question,
-      conv_history: formattedConvHistory,
-    });
-
-    return Response.json({ response });
+    return Response.json({ response: text });
   } catch (error) {
     console.error("Error in chat API:", error);
     return Response.json(
-      { error: "Failed to process chat request" },
+      { error: "Failed to process chat request", details: error.message },
       { status: 500 }
     );
   }

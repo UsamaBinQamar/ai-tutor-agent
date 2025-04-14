@@ -1,5 +1,5 @@
 {
-  "name": "my-chatbot-app",
+  "name": "ai-tutor-chatbot",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -9,26 +9,17 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@langchain/community": "^0.3.32",
-    "@langchain/core": "^0.3.40",
-    "@langchain/openai": "^0.4.4",
-    "@langchain/textsplitters": "^0.1.0",
+    "@google/generative-ai": "^0.2.1",
     "@radix-ui/react-slot": "^1.1.2",
-    "@supabase/supabase-js": "^2.49.1",
-    "axios": "^1.8.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "framer-motion": "^12.4.7",
-    "langchain": "^0.3.19",
     "lucide-react": "^0.476.0",
-    "motion": "^12.4.7",
     "next": "15.2.0",
-    "puppeteer": "^24.3.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "tailwind-merge": "^3.0.2",
-    "tailwindcss-animate": "^1.0.7",
-    "xml2js": "^0.6.2"
+    "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
@@ -36,7 +27,6 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@types/xml2js": "^0.4.14",
     "autoprefixer": "^10.4.20",
     "eslint": "^9",
     "eslint-config-next": "15.2.0",
