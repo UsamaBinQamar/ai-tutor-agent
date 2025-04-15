@@ -36,6 +36,7 @@ export default function AITutorPage() {
     setIsLoading(true);
 
     // Add a typing message immediately
+    // Add a typing message immediately
     setMessages((prev) => [
       ...prev,
       { role: "ai", content: "", isTyping: true },
