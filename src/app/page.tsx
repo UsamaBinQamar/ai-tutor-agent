@@ -95,7 +95,7 @@ export default function AITutorPage() {
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r from-purple-600 to-indigo-600">
               <Bot className="h-5 w-5 text-white" />
             </div>
-            <h1 className="text-xl font-bold text-gray-800">
+            <h1 className="text-xl font-bold text-gray-800 dark:text-gray-100">
               AI{" "}
               <span className="bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
                 Tutor
@@ -142,7 +142,7 @@ export default function AITutorPage() {
               <h2 className="mb-6 text-4xl font-bold bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 bg-clip-text text-transparent">
                 Welcome to AI Tutor
               </h2>
-              <p className="mb-8 max-w-lg text-lg text-gray-600">
+              <p className="mb-8 max-w-lg text-lg text-gray-600 dark:text-gray-300">
                 Your personal AI learning companion. Ask me anything about:
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left w-full max-w-3xl">
@@ -155,12 +155,12 @@ export default function AITutorPage() {
                   }}
                   transition={{ type: "spring", stiffness: 300 }}
                 >
-                  <h3 className="mb-3 text-xl font-semibold text-gray-800">
+                  <h3 className="mb-3 text-xl font-semibold text-gray-800 dark:text-gray-100">
                     <span className="bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
                       Academic Subjects
                     </span>
                   </h3>
-                  <ul className="space-y-2 text-gray-600">
+                  <ul className="space-y-2 text-gray-600 dark:text-gray-300">
                     <li className="flex items-center">
                       <div className="mr-2 h-1.5 w-1.5 rounded-full bg-purple-500"></div>
                       Mathematics
@@ -188,12 +188,12 @@ export default function AITutorPage() {
                   }}
                   transition={{ type: "spring", stiffness: 300 }}
                 >
-                  <h3 className="mb-3 text-xl font-semibold text-gray-800">
+                  <h3 className="mb-3 text-xl font-semibold text-gray-800 dark:text-gray-100">
                     <span className="bg-gradient-to-r from-indigo-600 to-blue-600 bg-clip-text text-transparent">
                       Learning Skills
                     </span>
                   </h3>
-                  <ul className="space-y-2 text-gray-600">
+                  <ul className="space-y-2 text-gray-600 dark:text-gray-300">
                     <li className="flex items-center">
                       <div className="mr-2 h-1.5 w-1.5 rounded-full bg-indigo-500"></div>
                       Study Techniques
@@ -278,7 +278,7 @@ export default function AITutorPage() {
                             />
                           </div>
                           <motion.span
-                            className="text-sm font-medium text-indigo-600"
+                            className="text-sm font-medium text-indigo-600 dark:text-indigo-300"
                             animate={{
                               opacity: [0.7, 1, 0.7],
                             }}
@@ -292,7 +292,7 @@ export default function AITutorPage() {
                           </motion.span>
                         </div>
                       ) : (
-                        <div className="prose prose-sm max-w-none">
+                        <div className="prose prose-sm max-w-none dark:prose-invert">
                           {message.content.split("\n").map((line, i) => (
                             <p key={i} className="mb-2 last:mb-0">
                               {line}
@@ -318,7 +318,7 @@ export default function AITutorPage() {
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               placeholder="Ask me anything about learning..."
-              className="flex-1 rounded-xl border-gray-200 bg-gray-50 px-4 py-6 focus-visible:ring-purple-500"
+              className="flex-1 rounded-xl border-gray-200 bg-gray-50 px-4 py-6 focus-visible:ring-purple-500 text-gray-800 dark:text-gray-800"
               disabled={isLoading}
             />
             <Button
