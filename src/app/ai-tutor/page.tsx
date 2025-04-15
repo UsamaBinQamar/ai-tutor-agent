@@ -1,13 +1,15 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Bot, Send, Loader2, Book, Brain, Lightbulb } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import { Book, Bot, Brain, Lightbulb, Send } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
 type Message = {
   role: "human" | "ai";
   content: string;
+  isTyping?: boolean;
 };
 
 export default function AITutorPage() {
@@ -33,6 +35,12 @@ export default function AITutorPage() {
     setMessages((prev) => [...prev, { role: "human", content: userMessage }]);
     setIsLoading(true);
 
+    // Add a typing message immediately
+    setMessages((prev) => [
+      ...prev,
+      { role: "ai", content: "", isTyping: true },
+    ]);
+
     try {
       const response = await fetch("/api/chat", {
         method: "POST",
@@ -41,7 +49,9 @@ export default function AITutorPage() {
         },
         body: JSON.stringify({
           question: userMessage,
-          convHistory: messages.map((m) => m.content),
+          convHistory: messages
+            .filter((m) => m.role === "human")
+            .map((m) => m.content),
         }),
       });
 
@@ -50,17 +60,27 @@ export default function AITutorPage() {
       }
 
       const data = await response.json();
-      setMessages((prev) => [...prev, { role: "ai", content: data.response }]);
+
+      // Remove the typing message and add the real response
+      setMessages((prev) => {
+        const filteredMessages = prev.filter((m) => !m.isTyping);
+        return [...filteredMessages, { role: "ai", content: data.response }];
+      });
     } catch (error) {
       console.error("Error getting chat response:", error);
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "ai",
-          content:
-            "I&apos;m sorry, there was an error processing your request. Please try again.",
-        },
-      ]);
+
+      // Remove the typing message and add the error message
+      setMessages((prev) => {
+        const filteredMessages = prev.filter((m) => !m.isTyping);
+        return [
+          ...filteredMessages,
+          {
+            role: "ai",
+            content:
+              "I&apos;m sorry, there was an error processing your request. Please try again.",
+          },
+        ];
+      });
     } finally {
       setIsLoading(false);
     }
@@ -133,33 +153,80 @@ export default function AITutorPage() {
             </div>
           ) : (
             messages.map((message, index) => (
-              <div
-                key={index}
-                className={`flex ${
-                  message.role === "human" ? "justify-end" : "justify-start"
-                }`}
-              >
-                <div
-                  className={`max-w-[80%] rounded-lg px-4 py-2 ${
-                    message.role === "human"
-                      ? "bg-blue-600 text-white"
-                      : "bg-white text-gray-800 shadow-sm"
+              <AnimatePresence key={index}>
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.3 }}
+                  className={`flex ${
+                    message.role === "human" ? "justify-end" : "justify-start"
                   }`}
                 >
-                  {message.content}
-                </div>
-              </div>
+                  <div
+                    className={`max-w-[80%] rounded-lg px-4 py-2 ${
+                      message.role === "human"
+                        ? "bg-blue-600 text-white"
+                        : "bg-white text-gray-800 shadow-sm"
+                    }`}
+                  >
+                    {message.isTyping ? (
+                      <div className="flex items-center space-x-2">
+                        <div className="flex space-x-1">
+                          <motion.div
+                            className="h-2 w-2 rounded-full bg-blue-500"
+                            animate={{
+                              y: ["0%", "-50%", "0%"],
+                            }}
+                            transition={{
+                              duration: 0.6,
+                              repeat: Infinity,
+                              repeatType: "loop",
+                              delay: 0,
+                            }}
+                          />
+                          <motion.div
+                            className="h-2 w-2 rounded-full bg-blue-500"
+                            animate={{
+                              y: ["0%", "-50%", "0%"],
+                            }}
+                            transition={{
+                              duration: 0.6,
+                              repeat: Infinity,
+                              repeatType: "loop",
+                              delay: 0.2,
+                            }}
+                          />
+                          <motion.div
+                            className="h-2 w-2 rounded-full bg-blue-500"
+                            animate={{
+                              y: ["0%", "-50%", "0%"],
+                            }}
+                            transition={{
+                              duration: 0.6,
+                              repeat: Infinity,
+                              repeatType: "loop",
+                              delay: 0.4,
+                            }}
+                          />
+                        </div>
+                        <span className="text-sm text-gray-500">
+                          AI Tutor is typing...
+                        </span>
+                      </div>
+                    ) : (
+                      <div className="prose prose-sm max-w-none">
+                        {message.content.split("\n").map((line, i) => (
+                          <p key={i} className="mb-2 last:mb-0">
+                            {line}
+                          </p>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </motion.div>
+              </AnimatePresence>
             ))
-          )}
-          {isLoading && (
-            <div className="flex justify-start">
-              <div className="max-w-[80%] rounded-lg bg-white px-4 py-2 shadow-sm">
-                <div className="flex items-center space-x-2">
-                  <Loader2 className="h-4 w-4 animate-spin text-blue-600" />
-                  <span className="text-gray-600">Thinking...</span>
-                </div>
-              </div>
-            </div>
           )}
           <div ref={messagesEndRef} />
         </div>
@@ -176,7 +243,11 @@ export default function AITutorPage() {
               className="flex-1"
               disabled={isLoading}
             />
-            <Button type="submit" disabled={isLoading || !inputValue.trim()}>
+            <Button
+              type="submit"
+              disabled={isLoading || !inputValue.trim()}
+              className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800"
+            >
               <Send className="h-4 w-4" />
             </Button>
           </div>
