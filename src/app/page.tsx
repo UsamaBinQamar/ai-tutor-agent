@@ -1,16 +1,12 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowRight, Brain, Book, Lightbulb, Sparkles } from "lucide-react";
+import { ArrowRight, Book, Brain, Lightbulb, Sparkles } from "lucide-react";
 import Link from "next/link";
-import Navbar from "@/components/Navbar";
 
 export default function LandingPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white">
-      {/* Navbar */}
-      <Navbar />
-
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 h-80 w-80 rounded-full bg-purple-500 opacity-20 blur-3xl"></div>
