@@ -4,23 +4,94 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Bot, Mail, Lock, User, ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { z } from "zod";
+import { useAuth } from "@/app/contexts/AuthContext";
+import { toast } from "sonner";
+
+// Define the signup form schema
+const signupSchema = z.object({
+  name: z.string().min(2, "Name must be at least 2 characters"),
+  email: z.string().email("Invalid email address"),
+  password: z
+    .string()
+    .min(8, "Password must be at least 8 characters")
+    .regex(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
+      "Password must contain at least one uppercase letter, one lowercase letter, and one number"
+    ),
+});
+
+type SignupFormData = z.infer<typeof signupSchema>;
 
 export default function SignupPage() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const { signUp } = useAuth();
+  const [formData, setFormData] = useState<SignupFormData>({
+    name: "",
+    email: "",
+    password: "",
+  });
+  const [errors, setErrors] = useState<
+    Partial<Record<keyof SignupFormData, string>>
+  >({});
   const [isLoading, setIsLoading] = useState(false);
+
+  const validateField = (field: keyof SignupFormData, value: string) => {
+    try {
+      signupSchema.shape[field].parse(value);
+      setErrors((prev: Partial<Record<keyof SignupFormData, string>>) => ({
+        ...prev,
+        [field]: undefined,
+      }));
+      return true;
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        setErrors((prev: Partial<Record<keyof SignupFormData, string>>) => ({
+          ...prev,
+          [field]: error.errors[0].message,
+        }));
+      }
+      return false;
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev: SignupFormData) => ({ ...prev, [name]: value }));
+    validateField(name as keyof SignupFormData, value);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
-    // Simulate signup process
-    setTimeout(() => {
+    try {
+      // Validate all fields
+      const validatedData = signupSchema.parse(formData);
+
+      // Call the signUp function from AuthContext
+      await signUp(
+        validatedData.email,
+        validatedData.password,
+        validatedData.name,
+        "user" // Default role
+      );
+
+      // Success message is handled by the AuthContext
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        // Handle validation errors
+        const fieldErrors: Partial<Record<keyof SignupFormData, string>> = {};
+        error.errors.forEach((err) => {
+          const field = err.path[0] as keyof SignupFormData;
+          fieldErrors[field] = err.message;
+        });
+        setErrors(fieldErrors);
+        toast.error("Please check the form for errors");
+      }
+      // Other errors are handled by AuthContext
+    } finally {
       setIsLoading(false);
-      // Redirect to AI tutor page after successful signup
-      window.location.href = "/ai-tutor";
-    }, 1500);
+    }
   };
 
   return (
@@ -42,7 +113,7 @@ export default function SignupPage() {
               <Bot className="h-8 w-8 text-white" />
             </div>
           </motion.div>
-          <h2 className="mt-6 text-3xl font-bold tracking-tight">
+          <h2 className="mt-6 text-3xl font-bold tracking-tight text-white">
             Create your account
           </h2>
           <p className="mt-2 text-sm text-gray-300">
@@ -71,12 +142,17 @@ export default function SignupPage() {
                   type="text"
                   autoComplete="name"
                   required
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="block w-full rounded-lg border border-slate-700 bg-slate-900 py-3 pl-10 pr-3 text-white placeholder-gray-400 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500 sm:text-sm"
+                  value={formData.name}
+                  onChange={handleChange}
+                  className={`block w-full rounded-lg border ${
+                    errors.name ? "border-red-500" : "border-slate-700"
+                  } bg-slate-900 py-3 pl-10 pr-3 text-white placeholder-gray-400 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500 sm:text-sm`}
                   placeholder="Full name"
                 />
               </div>
+              {errors.name && (
+                <p className="mt-1 text-sm text-red-500">{errors.name}</p>
+              )}
             </div>
             <div>
               <label htmlFor="email" className="sr-only">
@@ -92,12 +168,17 @@ export default function SignupPage() {
                   type="email"
                   autoComplete="email"
                   required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="block w-full rounded-lg border border-slate-700 bg-slate-900 py-3 pl-10 pr-3 text-white placeholder-gray-400 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500 sm:text-sm"
+                  value={formData.email}
+                  onChange={handleChange}
+                  className={`block w-full rounded-lg border ${
+                    errors.email ? "border-red-500" : "border-slate-700"
+                  } bg-slate-900 py-3 pl-10 pr-3 text-white placeholder-gray-400 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500 sm:text-sm`}
                   placeholder="Email address"
                 />
               </div>
+              {errors.email && (
+                <p className="mt-1 text-sm text-red-500">{errors.email}</p>
+              )}
             </div>
             <div>
               <label htmlFor="password" className="sr-only">
@@ -113,12 +194,17 @@ export default function SignupPage() {
                   type="password"
                   autoComplete="new-password"
                   required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="block w-full rounded-lg border border-slate-700 bg-slate-900 py-3 pl-10 pr-3 text-white placeholder-gray-400 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500 sm:text-sm"
+                  value={formData.password}
+                  onChange={handleChange}
+                  className={`block w-full rounded-lg border ${
+                    errors.password ? "border-red-500" : "border-slate-700"
+                  } bg-slate-900 py-3 pl-10 pr-3 text-white placeholder-gray-400 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500 sm:text-sm`}
                   placeholder="Password"
                 />
               </div>
+              {errors.password && (
+                <p className="mt-1 text-sm text-red-500">{errors.password}</p>
+              )}
             </div>
           </div>
 
@@ -154,7 +240,7 @@ export default function SignupPage() {
               whileTap={{ scale: 0.98 }}
               type="submit"
               disabled={isLoading}
-              className="group relative flex w-full justify-center rounded-lg bg-gradient-to-r from-purple-500 via-indigo-500 to-blue-500 px-4 py-3 text-sm font-medium text-white shadow-lg transition-all hover:from-purple-600 hover:via-indigo-600 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-slate-900"
+              className="group relative flex w-full justify-center rounded-lg bg-gradient-to-r from-purple-500 via-indigo-500 to-blue-500 px-4 py-3 text-sm font-medium text-white shadow-lg transition-all hover:from-purple-600 hover:via-indigo-600 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-slate-900 disabled:opacity-50"
             >
               <span className="absolute inset-y-0 left-0 flex items-center pl-3">
                 {isLoading ? (
