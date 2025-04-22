@@ -4,15 +4,17 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Bot, Mail, Lock, ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { useAuth } from "@/app/contexts/AuthContext";
 
 export default function LoginPage() {
+  const { signIn } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    await signIn(email, password);
 
     // Simulate login process
     setTimeout(() => {

@@ -7,8 +7,8 @@ import {
   forgotPasswordSchema,
 } from "@/lib/schemas/auth";
 import { Input } from "@/components/ui/input";
-import { useAuth } from "@/contexts/AuthContext";
 import Link from "next/link";
+import { useAuth } from "@/app/contexts/AuthContext";
 
 export default function ForgotPasswordPage() {
   const { forgotPassword } = useAuth();
@@ -43,9 +43,13 @@ export default function ForgotPasswordPage() {
                 {...register("email")}
                 type="email"
                 placeholder="Email address"
-                error={errors.email?.message}
                 className="w-full px-4 py-3 rounded-lg bg-[#1e2937] border border-gray-700 focus:outline-none focus:border-[#00FF9D] text-white placeholder-gray-400"
               />
+              {errors.email && (
+                <p className="mt-1 text-sm text-red-500">
+                  {errors.email.message}
+                </p>
+              )}
             </div>
           </div>
 
