@@ -6,15 +6,8 @@ import Link from "next/link";
 export default function LandingPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white">
-      {/* Animated background elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 h-80 w-80 rounded-full bg-purple-500 opacity-20 blur-3xl"></div>
-        <div className="absolute -bottom-40 -left-40 h-80 w-80 rounded-full bg-indigo-500 opacity-20 blur-3xl"></div>
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-96 w-96 rounded-full bg-blue-500 opacity-10 blur-3xl"></div>
-      </div>
-
       {/* Hero Section */}
-      <div className="relative overflow-hidden">
+      <div>
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="relative pt-32 pb-20 sm:pt-40 sm:pb-28">
             <div className="text-center">
@@ -53,7 +46,6 @@ export default function LandingPage() {
           </div>
         </div>
       </div>
-
       {/* Features Section */}
       <div className="py-24 sm:py-32">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -115,7 +107,6 @@ export default function LandingPage() {
           </div>
         </div>
       </div>
-
       {/* CTA Section */}
       <div className="relative isolate overflow-hidden py-16 sm:py-24">
         <div className="absolute inset-0 -z-10">

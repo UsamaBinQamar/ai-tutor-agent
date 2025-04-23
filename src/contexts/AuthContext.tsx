@@ -100,8 +100,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (data.user) {
         toast.success("Logged in successfully!");
-        router.push("/dashboard");
         router.refresh(); // Refresh the page to update server-side data
+        router.push("/");
       }
     } catch (error) {
       toast.error((error as AuthError).message);

@@ -4,6 +4,12 @@ import type { NextRequest } from "next/server";
 
 export async function middleware(req: NextRequest) {
   const res = NextResponse.next();
+  console.log("🚀 ~ middleware ~ res:@@@@", res);
+
+  console.log(
+    "🚀 ~ middleware ~ req.nextUrl.pathname:@@@@",
+    req.nextUrl.pathname
+  );
   const supabase = createMiddlewareClient({ req, res });
 
   try {
@@ -27,7 +33,7 @@ export async function middleware(req: NextRequest) {
       }
     }
 
-    if (req.nextUrl.pathname.startsWith("/prompt")) {
+    if (req.nextUrl.pathname.startsWith("/ai-tutor")) {
       // Only regular users can access prompt
       if (!session || userRole !== "user") {
         return NextResponse.redirect(new URL("/", req.url));
@@ -58,9 +64,9 @@ export async function middleware(req: NextRequest) {
 export const config = {
   matcher: [
     "/dashboard/:path*",
-    "/prompt/:path*",
+    "/ai-tutor/:path*",
     "/login",
-    "/signup",
+    "/sign-up",
     "/forgot-password",
   ],
 };

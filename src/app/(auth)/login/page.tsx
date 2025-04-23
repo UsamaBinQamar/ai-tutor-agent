@@ -6,17 +6,10 @@ import { LoginFormType, loginSchema } from "@/lib/schemas/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 
 export default function LoginPage() {
   const { signIn, user } = useAuth();
-  const router = useRouter();
-  useEffect(() => {
-    if (user) {
-      router.push("/");
-    }
-  }, [user, router]);
+
   const {
     register,
     handleSubmit,
@@ -27,24 +20,22 @@ export default function LoginPage() {
 
   const onSubmit = async (data: LoginFormType) => {
     await signIn(data.email, data.password);
-    if (user) {
-      router.push("/");
-    }
   };
 
-  // Show loading or nothing while checking authentication
   if (user) {
-    return null; // or a loading spinner
+    return null;
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#1a1a1a] py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-white">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white py-12 px-4 sm:px-6 lg:px-8">
+      {/* Animated background elements */}
+
+      <div className="max-w-md w-full space-y-8 relative z-10">
+        <div className="text-center fade-in">
+          <h2 className="text-3xl font-bold text-gradient">
             Sign in to your account
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-400">
+          <p className="mt-2 text-center text-gray-300">
             Enter your credentials to access your account
           </p>
         </div>
@@ -56,7 +47,7 @@ export default function LoginPage() {
                 type="email"
                 placeholder="Email address"
                 error={errors.email?.message}
-                className="w-full px-4 py-3 rounded-lg bg-[#1e2937] border border-gray-700 focus:outline-none focus:border-[#00FF9D] text-white placeholder-gray-400"
+                className="bg-slate-800/50 border-slate-700/50 text-white placeholder-gray-400 focus:ring-purple-500 focus:border-purple-500"
               />
             </div>
             <div>
@@ -65,7 +56,7 @@ export default function LoginPage() {
                 type="password"
                 placeholder="Password"
                 error={errors.password?.message}
-                className="w-full px-4 py-3 rounded-lg bg-[#1e2937] border border-gray-700 focus:outline-none focus:border-[#00FF9D] text-white placeholder-gray-400"
+                className="bg-slate-800/50 border-slate-700/50 text-white placeholder-gray-400 focus:ring-purple-500 focus:border-purple-500"
               />
             </div>
           </div>
@@ -74,7 +65,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-black bg-[#00FF9D] hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#00FF9D] transition-colors"
+              className="group relative w-full flex justify-center py-3 px-4 text-sm font-medium rounded-xl text-white bg-gradient-to-r from-purple-500 via-indigo-500 to-blue-500 shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
             >
               {isSubmitting ? "Signing in..." : "Sign in"}
             </button>
@@ -82,15 +73,15 @@ export default function LoginPage() {
 
           <div className="flex items-center justify-center space-x-4 text-sm mt-4">
             <Link
-              href="/signup"
-              className="text-[#00FF9D] hover:text-opacity-90 transition-colors"
+              href="/sign-up"
+              className="text-purple-400 hover:text-purple-300 transition-colors"
             >
               Create account
             </Link>
             <span className="text-gray-500">•</span>
             <Link
               href="/forgot-password"
-              className="text-[#00FF9D] hover:text-opacity-90 transition-colors"
+              className="text-purple-400 hover:text-purple-300 transition-colors"
             >
               Forgot password?
             </Link>

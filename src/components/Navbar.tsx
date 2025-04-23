@@ -4,11 +4,11 @@ import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { usePathname } from "next/navigation";
 import { Brain, User, LogOut } from "lucide-react";
+import { Button } from "./ui/button";
 
 export default function Navbar() {
   const { user, signOut } = useAuth();
   const pathname = usePathname();
-
   const isActive = (path: string) => pathname === path;
 
   return (
@@ -30,14 +30,14 @@ export default function Navbar() {
 
           <div className="flex items-center space-x-4">
             <Link
-              href="/chat-bot"
+              href="/ai-tutor"
               className={`px-3 py-2 rounded-md text-sm transition-all duration-300 ${
-                isActive("/chat-bot")
+                isActive("/ai-tutor")
                   ? "text-purple-400 bg-gradient-to-r from-purple-500/20 via-indigo-500/20 to-blue-500/20"
                   : "text-gray-300 hover:text-purple-400 hover:bg-gradient-to-r hover:from-purple-500/10 hover:via-indigo-500/10 hover:to-blue-500/10"
               }`}
             >
-              Chat Bot
+              AI Tutor
             </Link>
 
             {user ? (
@@ -60,17 +60,22 @@ export default function Navbar() {
               </div>
             ) : (
               <div className="flex items-center space-x-4">
-                <Link
-                  href="/login"
-                  className="px-3 py-2 rounded-md text-sm text-gray-300 hover:text-purple-400 hover:bg-gradient-to-r hover:from-purple-500/10 hover:via-indigo-500/10 hover:to-blue-500/10 transition-all duration-300"
-                >
-                  Login
+                <Link href="/login">
+                  <Button
+                    variant="outline"
+                    className={`${
+                      isActive("/login")
+                        ? "text-purple-400 bg-gradient-to-r from-purple-500/20 via-indigo-500/20 to-blue-500/20"
+                        : "text-gray-300 hover:text-purple-400 hover:bg-gradient-to-r hover:from-purple-500/10 hover:via-indigo-500/10 hover:to-blue-500/10"
+                    }`}
+                  >
+                    Login
+                  </Button>
                 </Link>
-                <Link
-                  href="/signup"
-                  className="px-3 py-2 rounded-md text-sm bg-gradient-to-r from-purple-500 via-indigo-500 to-blue-500 text-white hover:from-purple-600 hover:via-indigo-600 hover:to-blue-600 transition-all duration-300"
-                >
-                  Sign Up
+                <Link href="/sign-up">
+                  <Button className="bg-gradient-to-r from-purple-500 via-indigo-500 to-blue-500 text-white hover:from-purple-600 hover:via-indigo-600 hover:to-blue-600">
+                    Sign Up
+                  </Button>
                 </Link>
               </div>
             )}
