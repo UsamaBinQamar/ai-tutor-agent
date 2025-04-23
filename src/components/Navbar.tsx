@@ -1,240 +1,82 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
-import {
-  Bot,
-  Menu,
-  X,
-  User,
-  LogIn,
-  LogOut,
-  Book,
-  Sparkles,
-} from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { usePathname } from "next/navigation";
+import { Brain, User, LogOut } from "lucide-react";
 
 export default function Navbar() {
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isLoggedIn] = useState(false); // This would be replaced with actual auth state
+  const { user, signOut } = useAuth();
+  const pathname = usePathname();
 
-  // Handle scroll effect
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 10) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  const isActive = (path: string) => pathname === path;
 
   return (
-    <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled
-          ? "bg-slate-900/80 backdrop-blur-md shadow-lg"
-          : "bg-transparent"
-      }`}
-    >
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 items-center justify-between">
-          {/* Logo */}
-          <Link href="/" className="flex items-center space-x-3">
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r from-purple-500 via-indigo-500 to-blue-500 p-1"
-            >
-              <div className="flex h-full w-full items-center justify-center rounded-full bg-slate-900">
-                <Bot className="h-5 w-5 text-white" />
+    <nav className="border-b border-slate-800 bg-slate-900/80 backdrop-blur-lg">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
+          <div className="flex items-center">
+            <Link href="/" className="flex items-center space-x-3 group">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-purple-500 via-indigo-500 to-blue-500 p-1">
+                <div className="flex h-full w-full items-center justify-center rounded-full bg-slate-900">
+                  <Brain className="h-4 w-4 text-white" />
+                </div>
               </div>
-            </motion.div>
-            <span className="text-xl font-bold text-white">
-              AI{" "}
-              <span className="bg-gradient-to-r from-purple-400 to-indigo-400 bg-clip-text text-transparent">
-                Tutor
-              </span>
-            </span>
-          </Link>
-
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex md:items-center md:space-x-8">
-            <Link
-              href="/ai-tutor"
-              className="group flex items-center space-x-1 text-sm font-medium text-gray-300 transition-colors hover:text-white"
-            >
-              <Book className="h-4 w-4 text-purple-400 group-hover:text-purple-300" />
-              <span>AI Tutor</span>
-            </Link>
-            <Link
-              href="/features"
-              className="group flex items-center space-x-1 text-sm font-medium text-gray-300 transition-colors hover:text-white"
-            >
-              <Sparkles className="h-4 w-4 text-indigo-400 group-hover:text-indigo-300" />
-              <span>Features</span>
-            </Link>
-            <Link
-              href="/pricing"
-              className="text-sm font-medium text-gray-300 transition-colors hover:text-white"
-            >
-              Pricing
-            </Link>
-            <Link
-              href="/about"
-              className="text-sm font-medium text-gray-300 transition-colors hover:text-white"
-            >
-              About
+              <h1 className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-indigo-400 to-blue-400 text-xl font-bold group-hover:from-purple-500 group-hover:via-indigo-500 group-hover:to-blue-500 transition-all duration-300">
+                AI Tutor
+              </h1>
             </Link>
           </div>
 
-          {/* Auth Buttons */}
-          <div className="hidden md:flex md:items-center md:space-x-4">
-            {isLoggedIn ? (
-              <>
-                <Link href="/dashboard">
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="flex items-center space-x-2 rounded-lg bg-slate-800 px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:bg-slate-700"
-                  >
-                    <User className="h-4 w-4" />
-                    <span>Dashboard</span>
-                  </motion.button>
-                </Link>
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="flex items-center space-x-2 rounded-lg border border-slate-700 bg-transparent px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:bg-slate-800"
+          <div className="flex items-center space-x-4">
+            <Link
+              href="/chat-bot"
+              className={`px-3 py-2 rounded-md text-sm transition-all duration-300 ${
+                isActive("/chat-bot")
+                  ? "text-purple-400 bg-gradient-to-r from-purple-500/20 via-indigo-500/20 to-blue-500/20"
+                  : "text-gray-300 hover:text-purple-400 hover:bg-gradient-to-r hover:from-purple-500/10 hover:via-indigo-500/10 hover:to-blue-500/10"
+              }`}
+            >
+              Chat Bot
+            </Link>
+
+            {user ? (
+              <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-2">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-purple-500 via-indigo-500 to-blue-500 p-1">
+                    <div className="flex h-full w-full items-center justify-center rounded-full bg-slate-900">
+                      <User className="h-4 w-4 text-white" />
+                    </div>
+                  </div>
+                  <span className="text-sm text-gray-300">{user.email}</span>
+                </div>
+                <button
+                  onClick={() => signOut()}
+                  className="flex items-center space-x-1 px-3 py-2 rounded-md text-sm text-gray-300 hover:text-purple-400 hover:bg-gradient-to-r hover:from-purple-500/10 hover:via-indigo-500/10 hover:to-blue-500/10 transition-all duration-300"
                 >
                   <LogOut className="h-4 w-4" />
-                  <span>Logout</span>
-                </motion.button>
-              </>
+                  <span>Sign Out</span>
+                </button>
+              </div>
             ) : (
-              <>
-                <Link href="/login">
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="flex items-center space-x-2 rounded-lg border border-slate-700 bg-transparent px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:bg-slate-800"
-                  >
-                    <LogIn className="h-4 w-4" />
-                    <span>Login</span>
-                  </motion.button>
+              <div className="flex items-center space-x-4">
+                <Link
+                  href="/login"
+                  className="px-3 py-2 rounded-md text-sm text-gray-300 hover:text-purple-400 hover:bg-gradient-to-r hover:from-purple-500/10 hover:via-indigo-500/10 hover:to-blue-500/10 transition-all duration-300"
+                >
+                  Login
                 </Link>
-                <Link href="/signup">
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="flex items-center space-x-2 rounded-lg bg-gradient-to-r from-purple-500 via-indigo-500 to-blue-500 px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:from-purple-600 hover:via-indigo-600 hover:to-blue-600"
-                  >
-                    <span>Sign Up</span>
-                  </motion.button>
+                <Link
+                  href="/signup"
+                  className="px-3 py-2 rounded-md text-sm bg-gradient-to-r from-purple-500 via-indigo-500 to-blue-500 text-white hover:from-purple-600 hover:via-indigo-600 hover:to-blue-600 transition-all duration-300"
+                >
+                  Sign Up
                 </Link>
-              </>
+              </div>
             )}
-          </div>
-
-          {/* Mobile menu button */}
-          <div className="flex md:hidden">
-            <motion.button
-              whileTap={{ scale: 0.95 }}
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="inline-flex items-center justify-center rounded-md p-2 text-gray-300 hover:bg-slate-800 hover:text-white focus:outline-none"
-            >
-              <span className="sr-only">Open main menu</span>
-              {isMobileMenuOpen ? (
-                <X className="h-6 w-6" />
-              ) : (
-                <Menu className="h-6 w-6" />
-              )}
-            </motion.button>
           </div>
         </div>
       </div>
-
-      {/* Mobile menu */}
-      <AnimatePresence>
-        {isMobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3 }}
-            className="md:hidden"
-          >
-            <div className="space-y-1 bg-slate-900/95 px-2 pb-3 pt-2 backdrop-blur-md">
-              <Link
-                href="/ai-tutor"
-                className="block rounded-md px-3 py-2 text-base font-medium text-white hover:bg-slate-800"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                AI Tutor
-              </Link>
-              <Link
-                href="/features"
-                className="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-slate-800 hover:text-white"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Features
-              </Link>
-              <Link
-                href="/pricing"
-                className="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-slate-800 hover:text-white"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Pricing
-              </Link>
-              <Link
-                href="/about"
-                className="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-slate-800 hover:text-white"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                About
-              </Link>
-              {isLoggedIn ? (
-                <>
-                  <Link
-                    href="/dashboard"
-                    className="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-slate-800 hover:text-white"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    Dashboard
-                  </Link>
-                  <button
-                    className="block w-full rounded-md px-3 py-2 text-left text-base font-medium text-gray-300 hover:bg-slate-800 hover:text-white"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    Logout
-                  </button>
-                </>
-              ) : (
-                <>
-                  <Link
-                    href="/login"
-                    className="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-slate-800 hover:text-white"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    Login
-                  </Link>
-                  <Link
-                    href="/signup"
-                    className="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-slate-800 hover:text-white"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    Sign Up
-                  </Link>
-                </>
-              )}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </nav>
   );
 }
