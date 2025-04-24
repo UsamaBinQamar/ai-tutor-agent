@@ -2,6 +2,7 @@
 
 import { ArrowRight, Book, Brain, Lightbulb, Sparkles } from "lucide-react";
 import Link from "next/link";
+import PricingCard from "@/components/PricingCard";
 
 export default function LandingPage() {
   return (
@@ -120,167 +121,32 @@ export default function LandingPage() {
           </div>
 
           <div className="mt-20 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:gap-12 max-w-4xl mx-auto">
-            {/* Monthly Plan */}
-            <div className="group relative rounded-2xl bg-slate-800/50 p-8 shadow-lg backdrop-blur-sm border border-slate-700/50 hover:-translate-y-2 hover:shadow-xl transition-all duration-300 fade-in-up">
-              <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                <span className="inline-flex items-center rounded-full bg-gradient-to-r from-purple-500 to-indigo-500 px-4 py-1 text-sm font-semibold text-white">
-                  Monthly
-                </span>
-              </div>
-              <div className="text-center">
-                <div className="mt-4">
-                  <span className="text-4xl font-bold text-white">$10</span>
-                  <span className="text-gray-400">/month</span>
-                </div>
-                <p className="mt-4 text-gray-300">
-                  Perfect for short-term learning goals
-                </p>
-                <ul className="mt-8 space-y-4 text-left">
-                  <li className="flex items-center">
-                    <svg
-                      className="h-5 w-5 text-purple-400"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M5 13l4 4L19 7"
-                      />
-                    </svg>
-                    <span className="ml-3 text-gray-300">
-                      Unlimited AI Tutor Access
-                    </span>
-                  </li>
-                  <li className="flex items-center">
-                    <svg
-                      className="h-5 w-5 text-purple-400"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M5 13l4 4L19 7"
-                      />
-                    </svg>
-                    <span className="ml-3 text-gray-300">24/7 Support</span>
-                  </li>
-                  <li className="flex items-center">
-                    <svg
-                      className="h-5 w-5 text-purple-400"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M5 13l4 4L19 7"
-                      />
-                    </svg>
-                    <span className="ml-3 text-gray-300">
-                      All Subjects Covered
-                    </span>
-                  </li>
-                </ul>
-                <Link href="/signup" className="mt-8 block">
-                  <button className="w-full group relative rounded-xl bg-gradient-to-r from-purple-500 via-indigo-500 to-blue-500 px-8 py-4 text-white shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl">
-                    <span className="relative z-10 flex items-center justify-center font-semibold">
-                      Get Started
-                      <ArrowRight className="ml-2 inline-block h-5 w-5 transition-transform group-hover:translate-x-1" />
-                    </span>
-                    <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 opacity-0 transition-opacity group-hover:opacity-100"></div>
-                  </button>
-                </Link>
-              </div>
-            </div>
+            <PricingCard
+              title="Monthly"
+              price="$10"
+              period="month"
+              description="Perfect for short-term learning goals"
+              features={[
+                "Unlimited AI Tutor Access",
+                "24/7 Support",
+                "All Subjects Covered",
+              ]}
+              badge="Monthly"
+            />
 
-            {/* Yearly Plan */}
-            <div className="group relative rounded-2xl bg-slate-800/50 p-8 shadow-lg backdrop-blur-sm border border-slate-700/50 hover:-translate-y-2 hover:shadow-xl transition-all duration-300 fade-in-up">
-              <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                <span className="inline-flex items-center rounded-full bg-gradient-to-r from-blue-500 to-purple-500 px-4 py-1 text-sm font-semibold text-white">
-                  Best Value
-                </span>
-              </div>
-              <div className="text-center">
-                <div className="mt-4">
-                  <span className="text-4xl font-bold text-white">$100</span>
-                  <span className="text-gray-400">/year</span>
-                </div>
-                <p className="mt-4 text-gray-300">
-                  Save 17% with annual billing
-                </p>
-                <ul className="mt-8 space-y-4 text-left">
-                  <li className="flex items-center">
-                    <svg
-                      className="h-5 w-5 text-blue-400"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M5 13l4 4L19 7"
-                      />
-                    </svg>
-                    <span className="ml-3 text-gray-300">
-                      Everything in Monthly
-                    </span>
-                  </li>
-                  <li className="flex items-center">
-                    <svg
-                      className="h-5 w-5 text-blue-400"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M5 13l4 4L19 7"
-                      />
-                    </svg>
-                    <span className="ml-3 text-gray-300">Priority Support</span>
-                  </li>
-                  <li className="flex items-center">
-                    <svg
-                      className="h-5 w-5 text-blue-400"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M5 13l4 4L19 7"
-                      />
-                    </svg>
-                    <span className="ml-3 text-gray-300">
-                      Early Access to New Features
-                    </span>
-                  </li>
-                </ul>
-                <Link href="/signup" className="mt-8 block">
-                  <button className="w-full group relative rounded-xl bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 px-8 py-4 text-white shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl">
-                    <span className="relative z-10 flex items-center justify-center font-semibold">
-                      Get Started
-                      <ArrowRight className="ml-2 inline-block h-5 w-5 transition-transform group-hover:translate-x-1" />
-                    </span>
-                    <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 opacity-0 transition-opacity group-hover:opacity-100"></div>
-                  </button>
-                </Link>
-              </div>
-            </div>
+            <PricingCard
+              title="Yearly"
+              price="$100"
+              period="year"
+              description="Save 17% with annual billing"
+              features={[
+                "Everything in Monthly",
+                "Priority Support",
+                "Early Access to New Features",
+              ]}
+              isYearly={true}
+              badge="Best Value"
+            />
           </div>
         </div>
       </div>
