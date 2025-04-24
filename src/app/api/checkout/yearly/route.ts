@@ -1,4 +1,4 @@
-import { createClient } from "@supabase/supabase-js";
+import { createServerClient } from "@supabase/ssr";
 import Stripe from "stripe";
 import { NextResponse } from "next/server";
 
@@ -8,6 +8,7 @@ const requiredEnvVars = {
   NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
   SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
   STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
+  STRIPE_PUBLIC_KEY: process.env.STRIPE_PUBLIC_KEY,
   YEARLY_PRICE_ID: process.env.YEARLY_PRICE_ID,
 };
 
@@ -27,15 +28,29 @@ if (missingVars.length > 0) {
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 // Create admin client for user metadata updates
-const supabaseAdmin = createClient(
+const supabaseAdmin = createServerClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  {
+    cookies: {
+      get: () => undefined,
+      set: () => undefined,
+      remove: () => undefined,
+    },
+  }
 );
 
 // Create regular client for auth operations
-const supabase = createClient(
+const supabase = createServerClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+  {
+    cookies: {
+      get: () => undefined,
+      set: () => undefined,
+      remove: () => undefined,
+    },
+  }
 );
 
 export async function POST(request: Request) {
