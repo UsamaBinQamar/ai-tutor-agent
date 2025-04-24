@@ -124,7 +124,7 @@ export async function POST(request: Request) {
           quantity: 1,
         },
       ],
-      success_url: `${baseUrl}/`,
+      success_url: `${baseUrl}/ai-tutor`,
       cancel_url: `${baseUrl}`,
     });
 
