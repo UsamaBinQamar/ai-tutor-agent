@@ -1,16 +1,34 @@
-import { createMiddlewareClient } from "@supabase/auth-helpers-nextjs";
+import { createServerClient } from "@supabase/ssr";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 export async function middleware(req: NextRequest) {
   const res = NextResponse.next();
-  console.log("🚀 ~ middleware ~ res:@@@@", res);
 
-  console.log(
-    "🚀 ~ middleware ~ req.nextUrl.pathname:@@@@",
-    req.nextUrl.pathname
+  // Create a Supabase client configured to use cookies
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get: (name) => req.cookies.get(name)?.value,
+        set: (name, value, options) => {
+          res.cookies.set({
+            name,
+            value,
+            ...options,
+          });
+        },
+        remove: (name, options) => {
+          res.cookies.set({
+            name,
+            value: "",
+            ...options,
+          });
+        },
+      },
+    }
   );
-  const supabase = createMiddlewareClient({ req, res });
 
   try {
     const {
