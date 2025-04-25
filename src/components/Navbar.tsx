@@ -1,13 +1,13 @@
 "use client";
 
-import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
+import { Brain, Crown, LogOut, User } from "lucide-react";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Brain, User, LogOut } from "lucide-react";
 import { Button } from "./ui/button";
 
 export default function Navbar() {
-  const { user, signOut } = useAuth();
+  const { user, signOut, isSubscribed, subscriptionPlan } = useAuth();
   const pathname = usePathname();
   const isActive = (path: string) => pathname === path;
 
@@ -29,16 +29,18 @@ export default function Navbar() {
           </div>
 
           <div className="flex items-center space-x-4">
-            <Link
-              href="/ai-tutor"
-              className={`px-3 py-2 rounded-md text-sm transition-all duration-300 ${
-                isActive("/ai-tutor")
-                  ? "text-purple-400 bg-gradient-to-r from-purple-500/20 via-indigo-500/20 to-blue-500/20"
-                  : "text-gray-300 hover:text-purple-400 hover:bg-gradient-to-r hover:from-purple-500/10 hover:via-indigo-500/10 hover:to-blue-500/10"
-              }`}
-            >
-              AI Tutor
-            </Link>
+            {isSubscribed && (
+              <Link
+                href="/ai-tutor"
+                className={`px-3 py-2 rounded-md text-sm transition-all duration-300 ${
+                  isActive("/ai-tutor")
+                    ? "text-purple-400 bg-gradient-to-r from-purple-500/20 via-indigo-500/20 to-blue-500/20"
+                    : "text-gray-300 hover:text-purple-400 hover:bg-gradient-to-r hover:from-purple-500/10 hover:via-indigo-500/10 hover:to-blue-500/10"
+                }`}
+              >
+                AI Tutor
+              </Link>
+            )}
 
             {user ? (
               <div className="flex items-center space-x-4">
@@ -48,7 +50,19 @@ export default function Navbar() {
                       <User className="h-4 w-4 text-white" />
                     </div>
                   </div>
-                  <span className="text-sm text-gray-300">{user.email}</span>
+                  <div className="flex flex-col">
+                    <span className="text-sm text-gray-300">{user.email}</span>
+                    {isSubscribed && (
+                      <div className="flex items-center space-x-1">
+                        <Crown className="h-3 w-3 text-yellow-400" />
+                        <span className="text-xs text-yellow-400">
+                          {subscriptionPlan === "monthly"
+                            ? "Monthly Plan"
+                            : "Yearly Plan"}
+                        </span>
+                      </div>
+                    )}
+                  </div>
                 </div>
                 <button
                   onClick={() => signOut()}

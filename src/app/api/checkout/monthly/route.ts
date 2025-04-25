@@ -97,6 +97,9 @@ export async function POST(request: Request) {
       });
       customerId = customer.id;
 
+      const getMetadata = await supabaseAdmin.auth.admin.getUserById(user.id);
+      console.log("getMetadata", getMetadata);
+
       // Update user metadata with stripe_customer_id using admin client
       const { error: updateError } =
         await supabaseAdmin.auth.admin.updateUserById(user.id, {
@@ -128,7 +131,6 @@ export async function POST(request: Request) {
       cancel_url: `${baseUrl}`,
     });
 
-    console.log("Checkout session created:", checkoutSession);
     return NextResponse.json({ url: checkoutSession.url });
   } catch (error) {
     console.error("Checkout error:", error);

@@ -3,8 +3,9 @@
 import { ArrowRight, Book, Brain, Lightbulb, Sparkles } from "lucide-react";
 import Link from "next/link";
 import PricingCard from "@/components/PricingCard";
-
+import { useAuth } from "@/contexts/AuthContext";
 export default function LandingPage() {
+  const { isSubscribed } = useAuth();
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white">
       {/* Hero Section */}
@@ -119,35 +120,36 @@ export default function LandingPage() {
               Choose the plan that works best for you
             </p>
           </div>
+          {!isSubscribed && (
+            <div className="mt-20 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:gap-12 max-w-4xl mx-auto">
+              <PricingCard
+                title="Monthly"
+                price="$10"
+                period="month"
+                description="Perfect for short-term learning goals"
+                features={[
+                  "Unlimited AI Tutor Access",
+                  "24/7 Support",
+                  "All Subjects Covered",
+                ]}
+                badge="Monthly"
+              />
 
-          <div className="mt-20 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:gap-12 max-w-4xl mx-auto">
-            <PricingCard
-              title="Monthly"
-              price="$10"
-              period="month"
-              description="Perfect for short-term learning goals"
-              features={[
-                "Unlimited AI Tutor Access",
-                "24/7 Support",
-                "All Subjects Covered",
-              ]}
-              badge="Monthly"
-            />
-
-            <PricingCard
-              title="Yearly"
-              price="$100"
-              period="year"
-              description="Save 17% with annual billing"
-              features={[
-                "Everything in Monthly",
-                "Priority Support",
-                "Early Access to New Features",
-              ]}
-              isYearly={true}
-              badge="Best Value"
-            />
-          </div>
+              <PricingCard
+                title="Yearly"
+                price="$100"
+                period="year"
+                description="Save 17% with annual billing"
+                features={[
+                  "Everything in Monthly",
+                  "Priority Support",
+                  "Early Access to New Features",
+                ]}
+                isYearly={true}
+                badge="Best Value"
+              />
+            </div>
+          )}
         </div>
       </div>
       {/* CTA Section */}

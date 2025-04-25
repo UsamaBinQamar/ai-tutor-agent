@@ -25,13 +25,13 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#1a1a1a] py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-white">
             Reset your password
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-400">
+          <p className="mt-2 text-center text-sm text-gray-300">
             Enter your email address and we&apos;ll send you a link to reset
             your password
           </p>
@@ -44,7 +44,7 @@ export default function ForgotPasswordPage() {
                 type="email"
                 placeholder="Email address"
                 error={errors.email?.message}
-                className="w-full px-4 py-3 rounded-lg bg-[#1e2937] border border-gray-700 focus:outline-none focus:border-[#00FF9D] text-white placeholder-gray-400"
+                className="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 focus:outline-none focus:border-pink-400 text-white placeholder-gray-300"
               />
             </div>
           </div>
@@ -53,7 +53,7 @@ export default function ForgotPasswordPage() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-black bg-[#00FF9D] hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#00FF9D] transition-colors"
+              className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-pink-500 hover:bg-pink-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 transition-colors"
             >
               {isSubmitting ? "Sending..." : "Send reset link"}
             </button>
@@ -62,7 +62,7 @@ export default function ForgotPasswordPage() {
           <div className="text-center text-sm mt-4">
             <Link
               href="/login"
-              className="text-[#00FF9D] hover:text-opacity-90 transition-colors"
+              className="text-pink-400 hover:text-pink-300 transition-colors"
             >
               Back to login
             </Link>
