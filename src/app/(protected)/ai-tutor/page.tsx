@@ -85,7 +85,14 @@ export default function AITutorPage() {
       // Simulate typing with a delay between characters
       const typingInterval = setInterval(() => {
         if (currentIndex < fullText.length) {
-          setStreamingText((prev) => prev + fullText.charAt(currentIndex));
+          const nextChar = fullText.charAt(currentIndex);
+          setStreamingText((prev) => {
+            // If this is the first character, ensure it's rendered immediately
+            if (currentIndex === 0) {
+              return nextChar;
+            }
+            return prev + nextChar;
+          });
           currentIndex++;
         } else {
           clearInterval(typingInterval);
@@ -234,7 +241,7 @@ export default function AITutorPage() {
                             <div className="prose prose-sm max-w-none prose-invert">
                               {streamingText.split("\n").map((line, i) => (
                                 <p key={i} className="mb-2 last:mb-0">
-                                  {line}
+                                  {line || " "}
                                 </p>
                               ))}
                               <span className="typing-cursor">|</span>
@@ -259,7 +266,7 @@ export default function AITutorPage() {
                           <div className="prose prose-sm max-w-none prose-invert">
                             {message.content.split("\n").map((line, i) => (
                               <p key={i} className="mb-2 last:mb-0">
-                                {line}
+                                {line || " "}
                               </p>
                             ))}
                           </div>
@@ -279,7 +286,7 @@ export default function AITutorPage() {
                         <div className="prose prose-sm max-w-none prose-invert">
                           {streamingText.split("\n").map((line, i) => (
                             <p key={i} className="mb-2 last:mb-0">
-                              {line}
+                              {line || " "}
                             </p>
                           ))}
                           <span className="typing-cursor">|</span>
