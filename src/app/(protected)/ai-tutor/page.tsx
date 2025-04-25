@@ -15,6 +15,7 @@ export default function AITutorPage() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [streamingText, setStreamingText] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -23,7 +24,7 @@ export default function AITutorPage() {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [messages, streamingText]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,12 +35,17 @@ export default function AITutorPage() {
     setMessages((prev) => [...prev, { role: "human", content: userMessage }]);
     setIsLoading(true);
 
+    // Add temporary typing message
     setMessages((prev) => [
       ...prev,
       { role: "ai", content: "", isTyping: true },
     ]);
 
     try {
+      // Reset streaming text
+      setStreamingText("");
+
+      // Create the request
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: {
@@ -57,12 +63,41 @@ export default function AITutorPage() {
         throw new Error("Failed to get response");
       }
 
+      // Get the response data
       const data = await response.json();
 
-      setMessages((prev) => {
-        const filteredMessages = prev.filter((m) => !m.isTyping);
-        return [...filteredMessages, { role: "ai", content: data.response }];
-      });
+      // Remove typing indicator
+      setMessages((prev) => prev.filter((m) => !m.isTyping));
+
+      // Start the typing animation for the response
+      const fullText = data.response;
+      let currentIndex = 0;
+
+      // Remove the temporary typing message
+      setMessages((prev) => prev.filter((m) => !m.isTyping));
+
+      // Add a new message for the streaming content
+      setMessages((prev) => [
+        ...prev,
+        { role: "ai", content: "", isTyping: true },
+      ]);
+
+      // Simulate typing with a delay between characters
+      const typingInterval = setInterval(() => {
+        if (currentIndex < fullText.length) {
+          setStreamingText((prev) => prev + fullText.charAt(currentIndex));
+          currentIndex++;
+        } else {
+          clearInterval(typingInterval);
+          // Replace the typing message with the complete message
+          setMessages((prev) => {
+            const filteredMessages = prev.filter((m) => !m.isTyping);
+            return [...filteredMessages, { role: "ai", content: fullText }];
+          });
+          setStreamingText("");
+          setIsLoading(false);
+        }
+      }, 10); // Adjust typing speed here (milliseconds per character)
     } catch (error) {
       console.error("Error getting chat response:", error);
       setMessages((prev) => {
@@ -76,7 +111,6 @@ export default function AITutorPage() {
           },
         ];
       });
-    } finally {
       setIsLoading(false);
     }
   };
@@ -196,20 +230,31 @@ export default function AITutorPage() {
                         }`}
                       >
                         {message.isTyping ? (
-                          <div className="typing-indicator flex items-center">
-                            <div className="typing-dot animate-bounce"></div>
-                            <div
-                              className="typing-dot animate-bounce"
-                              style={{ animationDelay: "0.2s" }}
-                            ></div>
-                            <div
-                              className="typing-dot animate-bounce"
-                              style={{ animationDelay: "0.4s" }}
-                            ></div>
-                            <span className="text-sm font-medium text-purple-400 ml-2">
-                              AI Tutor is thinking...
-                            </span>
-                          </div>
+                          message.role === "ai" && streamingText ? (
+                            <div className="prose prose-sm max-w-none prose-invert">
+                              {streamingText.split("\n").map((line, i) => (
+                                <p key={i} className="mb-2 last:mb-0">
+                                  {line}
+                                </p>
+                              ))}
+                              <span className="typing-cursor">|</span>
+                            </div>
+                          ) : (
+                            <div className="typing-indicator flex items-center">
+                              <div className="typing-dot animate-bounce"></div>
+                              <div
+                                className="typing-dot animate-bounce"
+                                style={{ animationDelay: "0.2s" }}
+                              ></div>
+                              <div
+                                className="typing-dot animate-bounce"
+                                style={{ animationDelay: "0.4s" }}
+                              ></div>
+                              <span className="text-sm font-medium text-purple-400 ml-2">
+                                AI Tutor is thinking...
+                              </span>
+                            </div>
+                          )
                         ) : (
                           <div className="prose prose-sm max-w-none prose-invert">
                             {message.content.split("\n").map((line, i) => (
@@ -223,6 +268,26 @@ export default function AITutorPage() {
                     </div>
                   </div>
                 ))}
+                {/* Render the currently streaming text if there is no typing message */}
+                {streamingText && !messages.find((m) => m.isTyping) && (
+                  <div className="flex justify-start">
+                    <div className="message ai flex items-start space-x-3 max-w-3xl">
+                      <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-indigo-500">
+                        <Bot className="h-4 w-4 text-white" />
+                      </div>
+                      <div className="flex-1 p-4 rounded-xl bg-slate-800/50 border border-slate-700">
+                        <div className="prose prose-sm max-w-none prose-invert">
+                          {streamingText.split("\n").map((line, i) => (
+                            <p key={i} className="mb-2 last:mb-0">
+                              {line}
+                            </p>
+                          ))}
+                          <span className="typing-cursor">|</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
             <div ref={messagesEndRef} />
@@ -251,6 +316,36 @@ export default function AITutorPage() {
           </div>
         </form>
       </div>
+
+      {/* Add CSS for typing cursor animation */}
+      <style jsx global>{`
+        .typing-dot {
+          width: 6px;
+          height: 6px;
+          background-color: #a855f7;
+          border-radius: 50%;
+          margin-right: 4px;
+        }
+
+        .typing-cursor {
+          display: inline-block;
+          width: 2px;
+          height: 1em;
+          background-color: transparent;
+          color: #a855f7;
+          animation: blink 1s step-end infinite;
+        }
+
+        @keyframes blink {
+          from,
+          to {
+            opacity: 1;
+          }
+          50% {
+            opacity: 0;
+          }
+        }
+      `}</style>
     </div>
   );
 }
