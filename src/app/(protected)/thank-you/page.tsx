@@ -3,16 +3,26 @@
 import { CheckCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 
 export default function ThankYouPage() {
   const [countdown, setCountdown] = useState(10);
   const router = useRouter();
+  const { signOut } = useAuth();
 
   useEffect(() => {
     const timer = setInterval(() => {
       setCountdown((prev) => {
         if (prev <= 1) {
           clearInterval(timer);
+          // Sign out the user
+          signOut();
+          // Show success message
+          toast.success(
+            "Subscription successful! Please sign in again to access AI Tutor."
+          );
+          // Redirect to home page
           router.push("/");
           return 0;
         }
@@ -21,7 +31,7 @@ export default function ThankYouPage() {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [router]);
+  }, [router, signOut]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white flex items-center justify-center">
@@ -42,20 +52,27 @@ export default function ThankYouPage() {
         </h1>
 
         <p className="text-lg text-gray-300">
-          Your payment was successful. You now have full access to AI Tutor.
+          Your payment was successful. You will be signed out and redirected to
+          sign in again.
         </p>
 
         <div className="space-y-4">
           <p className="text-purple-400">
-            Redirecting to AI Tutor in {countdown} seconds...
+            Redirecting in {countdown} seconds...
           </p>
 
           <div className="flex justify-center space-x-4">
             <button
-              onClick={() => router.push("/ai-tutor")}
+              onClick={() => {
+                signOut();
+                toast.success(
+                  "Subscription successful! Please sign in again to access AI Tutor."
+                );
+                router.push("/");
+              }}
               className="rounded-xl bg-gradient-to-r from-purple-500 via-indigo-500 to-blue-500 px-6 py-3 text-white shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl"
             >
-              Go to AI Tutor Now
+              Sign Out Now
             </button>
           </div>
         </div>

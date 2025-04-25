@@ -2,7 +2,9 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Book, Brain, Lightbulb, Send, User, Bot } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { Book, Bot, Brain, Lightbulb, Send, User } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 type Message = {
@@ -12,6 +14,9 @@ type Message = {
 };
 
 export default function AITutorPage() {
+  const { isSubscribed } = useAuth();
+  const router = useRouter();
+
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -21,6 +26,12 @@ export default function AITutorPage() {
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
+
+  useEffect(() => {
+    if (!isSubscribed) {
+      router.push("/");
+    }
+  }, [isSubscribed]);
 
   useEffect(() => {
     scrollToBottom();
